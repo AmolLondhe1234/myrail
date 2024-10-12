@@ -1,0 +1,12 @@
+asgiref
+Django
+python-dateutil
+six
+sqlparse
+tzdata
+secure-smtplib
+whitenoise
+gunicorn
+requests
+bs4
+lxml
