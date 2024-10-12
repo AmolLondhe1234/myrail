@@ -239,8 +239,11 @@
                             {% csrf_token %}
                             <div class="mb-3 relative">
                                 <input type="text" name="from_station" id="fare_from_station" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="From Station" required>
-                                <input type="text" name="from_station" id="fare_from_station" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="From Station" required>
                                 <div id="fare_from_station_dropdown" class="station-dropdown hidden"></div>
+                            </div>
+                            <div class="mb-3 relative">
+                                <input type="text" name="to_station" id="fare_to_station" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="To Station" required>
+                                <div id="fare_to_station_dropdown" class="station-dropdown hidden"></div>
                             </div>
                             <div class="mb-3">
                                 <input type="text" name="train_code" id="train_code" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Enter train code" required>
