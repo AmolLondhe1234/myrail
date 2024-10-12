@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://myrail-sigma.vercel.app/'
+    'https://myrail-sigma.vercel.app/', 'https://myrail-4cobdwusj-amollondhe1234s-projects.vercel.app/'
 ]
 
 
