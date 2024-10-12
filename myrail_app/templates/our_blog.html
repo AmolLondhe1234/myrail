@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY-RAIL Blog: Indian Railways Information and Updates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <!-- Header (reused from previous example) -->
+    <header class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <div class="flex items-center mb-6 sm:mb-0">
+                    <img src="/api/placeholder/80/80" alt="MY-RAIL Logo" class="w-20 h-20 mr-4 rounded-full border-4 border-yellow-400 shadow-lg">
+                    <div class="text-center sm:text-left">
+                        <h1 class="text-5xl font-bold tracking-tight">MY-RAIL</h1>
+                        <p class="text-xl mt-2 font-light">Indian Railways Information Portal</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 text-lg">
+                    <a href="/" class="hover:text-yellow-300 transition duration-300 flex items-center group">
+                        <i class="fas fa-train text-2xl mr-2 group-hover:text-yellow-300"></i>
+                        <span>Rail Information</span>
+                    </a>
+                    <a href="#" class="hover:text-yellow-300 transition duration-300 flex items-center group">
+                        <i class="fas fa-bus text-2xl mr-2 group-hover:text-yellow-300"></i>
+                        <span class="mr-2">Bus Booking</span>
+                        <span class="bg-yellow-300 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">Coming Soon</span>
+                    </a>
+                    <a href="#" class="hover:text-yellow-300 transition duration-300 flex items-center group">
+                        <i class="fas fa-plane text-2xl mr-2 group-hover:text-yellow-300"></i>
+                        <span class="mr-2">Flight Booking</span>
+                        <span class="bg-yellow-300 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">Coming Soon</span>
+                    </a>
+                    <a href="#" class="hover:text-yellow-300 transition duration-300 flex items-center group">
+                        <i class="fas fa-blog text-2xl mr-2 group-hover:text-yellow-300"></i>
+                        <span>Our Blog</span>
+                    </a>
+                    <a href="#" class="bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105 flex items-center">
+                        <i class="fas fa-user-circle text-xl mr-2"></i>
+                        Login
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Blog Hero Section -->
+    <section class="bg-blue-900 text-white py-20">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold mb-4">Welcome to MY-RAIL Blog</h2>
+            <p class="text-xl mb-8">Stay updated with the latest news, travel tips, and exciting destinations across India's vast railway network.</p>
+            <a href="#" class="bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-2 px-6 rounded-full transition duration-300 inline-block">
+                Subscribe to Our Newsletter
+            </a>
+        </div>
+    </section>
+
+    <!-- Featured Posts -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold mb-8 text-center">Featured Posts</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Featured Post 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="/api/placeholder/400/250" alt="Featured Post 1" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h4 class="text-xl font-bold mb-2">10 Most Scenic Train Routes in India</h4>
+                        <p class="text-gray-600 mb-4">Discover breathtaking landscapes and unforgettable journeys across India's most beautiful rail routes.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold">Read More →</a>
+                    </div>
+                </div>
+                <!-- Featured Post 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="/api/placeholder/400/250" alt="Featured Post 2" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h4 class="text-xl font-bold mb-2">Essential Tips for Comfortable Train Travel</h4>
+                        <p class="text-gray-600 mb-4">Make your journey smooth and enjoyable with these expert tips for long-distance train travel in India.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold">Read More →</a>
+                    </div>
+                </div>
+                <!-- Featured Post 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="/api/placeholder/400/250" alt="Featured Post 3" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h4 class="text-xl font-bold mb-2">The Future of Indian Railways: New Technologies</h4>
+                        <p class="text-gray-600 mb-4">Explore the cutting-edge innovations shaping the future of train travel in India.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold">Read More →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Posts -->
+    <section class="bg-gray-200 py-16">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold mb-8 text-center">Recent Posts</h3>
+            <div class="space-y-8">
+                <!-- Recent Post 1 -->
+                <div class="bg-white rounded-lg shadow-md p-6 flex flex-col md:flex-row">
+                    <img src="/api/placeholder/200/150" alt="Recent Post 1" class="w-full md:w-48 h-32 object-cover rounded-lg mb-4 md:mb-0 md:mr-6">
+                    <div>
+                        <h4 class="text-xl font-bold mb-2">New High-Speed Rail Corridor Announced</h4>
+                        <p class="text-gray-600 mb-2">The government has unveiled plans for a new high-speed rail corridor connecting major cities.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold">Read More →</a>
+                    </div>
+                </div>
+                <!-- Recent Post 2 -->
+                <div class="bg-white rounded-lg shadow-md p-6 flex flex-col md:flex-row">
+                    <img src="/api/placeholder/200/150" alt="Recent Post 2" class="w-full md:w-48 h-32 object-cover rounded-lg mb-4 md:mb-0 md:mr-6">
+                    <div>
+                        <h4 class="text-xl font-bold mb-2">5 Must-Try Dishes on Indian Trains</h4>
+                        <p class="text-gray-600 mb-2">Explore the delicious world of railway cuisine with these iconic dishes available on Indian trains.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold">Read More →</a>
+                    </div>
+                </div>
+                <!-- Recent Post 3 -->
+                <div class="bg-white rounded-lg shadow-md p-6 flex flex-col md:flex-row">
+                    <img src="/api/placeholder/200/150" alt="Recent Post 3" class="w-full md:w-48 h-32 object-cover rounded-lg mb-4 md:mb-0 md:mr-6">
+                    <div>
+                        <h4 class="text-xl font-bold mb-2">Eco-Friendly Initiatives in Indian Railways</h4>
+                        <p class="text-gray-600 mb-2">Discover how Indian Railways is going green with these innovative environmental initiatives.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold">Read More →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-between">
+                <div class="w-full md:w-1/3 mb-6 md:mb-0">
+                    <h5 class="text-xl font-bold mb-4">About MY-RAIL</h5>
+                    <p class="text-sm">MY-RAIL is your one-stop portal for all Indian Railways information, bookings, and travel insights.</p>
+                </div>
+                <div class="w-full md:w-1/3 mb-6 md:mb-0">
+                    <h5 class="text-xl font-bold mb-4">Quick Links</h5>
+                    <ul class="text-sm">
+                        <li><a href="#" class="hover:text-yellow-300">Home</a></li>
+                        <li><a href="#" class="hover:text-yellow-300">About Us</a></li>
+                        <li><a href="#" class="hover:text-yellow-300">Contact</a></li>
+                        <li><a href="#" class="hover:text-yellow-300">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <h5 class="text-xl font-bold mb-4">Connect With Us</h5>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-2xl hover:text-yellow-300"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-yellow-300"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-2xl hover:text-yellow-300"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-2xl hover:text-yellow-300"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm">
+                <p>&copy; 2024 MY-RAIL. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

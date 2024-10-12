@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNR Status Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .result-item {
+            margin-bottom: 0.5rem;
+        }
+        .result-label {
+            font-weight: bold;
+        }
+        .passenger-list {
+            margin-top: 1rem;
+        }
+        .passenger-item {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+        .back-button {
+            display: block;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 1.5rem;
+        }
+        .back-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PNR Status Result</h1>
+        {% if data %}
+            <div class="result-item"><span class="result-label">PNR Number:</span> {{ data.Pnr }}</div>
+            <div class="result-item"><span class="result-label">Train Number:</span> {{ data.TrainNo }}</div>
+            <div class="result-item"><span class="result-label">Train Name:</span> {{ data.TrainName }}</div>
+            <div class="result-item"><span class="result-label">Date of Journey:</span> {{ data.Doj }}</div>
+            <div class="result-item"><span class="result-label">From:</span> {{ data.From }} ({{ data.SourceName }})</div>
+            <div class="result-item"><span class="result-label">To:</span> {{ data.To }} ({{ data.DestinationName }})</div>
+            <div class="result-item"><span class="result-label">Boarding Point:</span> {{ data.BoardingPoint }} ({{ data.BoardingStationName }})</div>
+            <div class="result-item"><span class="result-label">Reservation Upto:</span> {{ data.ReservationUpto }} ({{ data.ReservationUptoName }})</div>
+            <div class="result-item"><span class="result-label">Class:</span> {{ data.Class }}</div>
+            <div class="result-item"><span class="result-label">Quota:</span> {{ data.Quota }}</div>
+            <div class="result-item"><span class="result-label">Chart Status:</span> {% if data.ChartPrepared %}Prepared{% else %}Not Prepared{% endif %}</div>
+            <div class="result-item"><span class="result-label">Departure:</span> {{ data.DepartureTime }}</div>
+            <div class="result-item"><span class="result-label">Arrival:</span> {{ data.ArrivalTime }}</div>
+            <div class="result-item"><span class="result-label">Duration:</span> {{ data.Duration }}</div>
+            <div class="result-item"><span class="result-label">Expected Platform:</span> {{ data.ExpectedPlatformNo }}</div>
+            <div class="result-item"><span class="result-label">Coach Position:</span> {{ data.CoachPosition }}</div>
+            
+            <div class="passenger-list">
+                <span class="result-label">Passengers:</span>
+                {% for passenger in data.PassengerStatus %}
+                    <div class="passenger-item">
+                        Passenger {{ passenger.Number }}: 
+                        Booking Status: {{ passenger.BookingStatus }},
+                        Current Status: {{ passenger.CurrentStatus }}
+                        {% if passenger.Coach %}
+                            , Coach: {{ passenger.Coach }}
+                        {% endif %}
+                        {% if passenger.Berth %}
+                            , Berth: {{ passenger.Berth }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if data.TrainStatus %}
+                <div class="result-item"><span class="result-label">Train Status:</span> {{ data.TrainStatus }}</div>
+            {% endif %}
+            
+            {% if data.TrainCancelledFlag %}
+                <div class="result-item"><span class="result-label">Train Status:</span> Cancelled</div>
+            {% endif %}
+            
+            <div class="result-item"><span class="result-label">Booking Fare:</span> ₹{{ data.BookingFare }}</div>
+            
+            {% if data.HasPantry %}
+                <div class="result-item"><span class="result-label">Pantry Available:</span> Yes</div>
+            {% endif %}
+            
+            <div class="result-item">
+                <span class="result-label">Ratings:</span>
+                Overall: {{ data.Rating }}/5,
+                Food: {{ data.FoodRating }}/5,
+                Punctuality: {{ data.PunctualityRating }}/5,
+                Cleanliness: {{ data.CleanlinessRating }}/5
+                (Based on {{ data.RatingCount }} ratings)
+            </div>
+        {% else %}
+            <p>No PNR data available.</p>
+        {% endif %}
+        <a href="{% url 'pnr' %}" class="back-button">Check Another PNR</a>
+    </div>
+</body>
+</html>

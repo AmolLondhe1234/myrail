@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Running Status</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .form-container {
+            background-color: #1a73e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-group:last-child {
+            margin-right: 0;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        input {
+            background-color: #ffffff;
+        }
+        button {
+            background-color: #ff5722;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+        button:hover {
+            background-color: #e64a19;
+        }
+        .current-station {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .station-list {
+            display: flex;
+            flex-direction: column;
+        }
+        .station-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .station-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .station-info {
+            flex: 1;
+        }
+        .station-name {
+            font-size: 18px;
+            font-weight: 500;
+            color: #1a73e8;
+            margin-bottom: 5px;
+        }
+        .station-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #757575;
+        }
+        .live-train {
+            background-color: #ff5722;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .delay {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+        .on-time {
+            color: #4caf50;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        
+        <h1>Train Running Status</h1>
+        <div class="form-container">
+            <form method="GET" action="{% url 'running' %}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" name="train_number" placeholder="Enter Train Number" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" name="date" required>
+                    </div>
+                </div>
+                <button type="submit">Check Running Status</button>
+            </form>
+        </div>
+
+        {% if current_station %}
+        <div class="current-station">
+            Current Station: {{ current_station }}
+        </div>
+        {% endif %}
+
+        {% if status_data %}
+        <div class="station-list">
+            {% for status in status_data %}
+            <div class="station-card">
+                <div class="station-info">
+                    <div class="station-name">{{ status.station }}</div>
+                    <div class="station-details">
+                        <span>Day {{ status.day }}</span>
+                        <span>{{ status.date }}</span>
+                        <span>Arr: {{ status.arrives }}</span>
+                        <span>Dep: {{ status.departs }}</span>
+                        <span class="{% if status.lates == 'On time' %}on-time{% else %}delay{% endif %}">
+                            {{ status.lates }}
+                        </span>
+                    </div>
+                </div>
+                {% if status.live_train %}
+                <span class="live-train">LIVE</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% elif status_data is None %}
+        <p>Enter train number and date to check running status.</p>
+        {% else %}
+        <p>No data available for the given train number and date.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

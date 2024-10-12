@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY-Rail Indian Railways Information Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .scrollbar-thin {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+        }
+        .station-dropdown {
+            position: absolute;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            z-index: 10;
+        }
+        .station-dropdown div {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .station-dropdown div:hover {
+            background-color: #f3f4f6;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .animate-slideInRight {
+            animation: slideInRight 0.5s ease-out;
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        /* Mobile-specific styles */
+        @media (max-width: 640px) {
+            .mobile-services-container {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none; /* Firefox */
+                -ms-overflow-style: none; /* Internet Explorer 10+ */
+            }
+            .mobile-services-container::-webkit-scrollbar {
+                display: none; /* WebKit */
+            }
+            .mobile-service-item {
+                flex: 0 0 auto;
+                width: 90%;
+                scroll-snap-align: start;
+                margin-right: 1rem;
+                background-color: white;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            }
+            .mobile-service-item:last-child {
+                margin-right: 0;
+            }
+        }
+        .ad-placeholder {
+            background-color: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            color: #4b5563;
+        }
+        .demo-ad {
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <div class="flex items-center mb-6 sm:mb-0">
+                    <img src="/api/placeholder/80/8" alt="MY-RAIL Logo" class="w-20 h-20 mr-4 rounded-full border-4 border-yellow-400 shadow-lg">
+                    <div class="text-center sm:text-left">
+                        <h1 class="text-5xl font-bold tracking-tight">MY-RAIL</h1>
+                        <p class="text-xl mt-2 font-light">Indian Railways Information Portal</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 text-lg">
+                    <a href="/" class="hover:text-yellow-300 transition duration-300 flex items-center group">
+                        <i class="fas fa-train text-2xl mr-2 group-hover:text-yellow-300"></i>
+                        <span>Rail Information</span>
+                    </a>
+                    <a href="#" class="hover:text-yellow-300 transition duration-300 flex items-center group">
+                        <i class="fas fa-bus text-2xl mr-2 group-hover:text-yellow-300"></i>
+                        <span class="mr-2">Bus Booking</span>
+                        <span class="bg-yellow-300 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">Coming Soon</span>
+                    </a>
+                    <a href="#" class="hover:text-yellow-300 transition duration-300 flex items-center group">
+                        <i class="fas fa-plane text-2xl mr-2 group-hover:text-yellow-300"></i>
+                        <span class="mr-2">Flight Booking</span>
+                        <span class="bg-yellow-300 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">Coming Soon</span>
+                    </a>
+                    <a href="/our_blog/" class="hover:text-yellow-300 transition duration-300 flex items-center group">
+                        <i class="fas fa-blog text-2xl mr-2 group-hover:text-yellow-300"></i>
+                        <span>Our Blog</span>
+                    </a>
+                    <a href="#" class="bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105 flex items-center">
+                        <i class="fas fa-user-circle text-xl mr-2"></i>
+                        Login
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="border-b-4 border-yellow-400"></div>
+    
+    <div class="flex-grow flex flex-col sm:flex-row">
+        <!-- Services Container -->
+        <div class="w-full sm:w-1/3 bg-white shadow-lg overflow-hidden">
+            <div class="p-4 sm:overflow-y-auto sm:scrollbar-thin mobile-services-container">
+                <h2 class="text-2xl font-semibold mb-6 text-blue-700 sm:sticky sm:top-0 sm:bg-white sm:z-10">Services</h2>
+                <div class="space-y-0 sm:space-y-8 flex sm:flex-col">
+                    <!-- PNR Status -->
+                    <div class="mobile-service-item">
+                        <h3 class="font-medium text-lg text-indigo-600 flex items-center">
+                            <i class="fas fa-ticket-alt mr-2"></i>PNR Status
+                        </h3>
+                        <form id="pnr-form" class="mt-3" action="{% url 'pnr' %}" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="pnr_number" placeholder="Enter PNR Number" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+                            <button type="submit" class="mt-3 w-full bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-search mr-2"></i>Check PNR
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Live Running Status -->
+                    <div class="mobile-service-item">
+                        <h3 class="font-medium text-lg text-indigo-600 flex items-center">
+                            <i class="fas fa-train mr-2"></i>Live Running Status
+                        </h3>
+                        <form id="live-running-form" class="mt-3" action="{% url 'live_running' %}" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="train_number" placeholder="Enter Train Number" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 mb-3" required>
+                            <input type="hidden" name="date" id="current-date">
+                            <button type="submit" class="w-full bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-clock mr-2"></i>Check Status
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Search Train -->
+                    <div class="mobile-service-item">
+                        <h3 class="font-medium text-lg text-indigo-600 flex items-center">
+                            <i class="fas fa-search mr-2"></i>Search Train
+                        </h3>
+                        <form id="search-train-form" class="mt-3" action="{% url 'search_train' %}" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="train_number" placeholder="Enter Train Number" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+                            <button type="submit" class="mt-3 w-full bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-search mr-2"></i>Search Train
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Trains Between Stations -->
+                    <div class="mobile-service-item">
+                        <h3 class="font-medium text-lg text-indigo-600 flex items-center">
+                            <i class="fas fa-exchange-alt mr-2"></i>Trains Between Stations
+                        </h3>
+                        <form id="train-b-station-form" class="mt-3" action="{% url 'train_b_station' %}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3 relative">
+                                <input type="text" name="from_station" id="from_station" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="From Station" required>
+                                <div id="from_station_dropdown" class="station-dropdown hidden"></div>
+                            </div>
+                            <div class="mb-3 relative">
+                                <input type="text" name="to_station" id="to_station" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="To Station" required>
+                                <div id="to_station_dropdown" class="station-dropdown hidden"></div>
+                            </div>
+                            <div class="mb-3">
+                                <input type="date" name="journey_date" id="journey_date" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+                            </div>
+                            <div class="mb-3">
+                                <select name="quota" id="quota" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+                                    <option value="general">General</option>
+                                    <option value="ladies">Ladies</option>
+                                    <option value="tatkal">Tatkal</option>
+                                    <option value="senior_citizen">Senior Citizen</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="mt-3 w-full bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-list mr-2"></i>Find Trains
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Fare Inquiry -->
+                    <div class="mobile-service-item">
+                        <h3 class="font-medium text-lg text-indigo-600 flex items-center">
+                            <i class="fas fa-rupee-sign mr-2"></i>Fare Inquiry
+                        </h3>
+                        <form id="fare-inquiry-form" class="mt-3" action="{% url 'fare_inquiry' %}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3 relative">
+                                <input type="text" name="from_station" id="fare_from_station" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="From Station" required>
+                                <input type="text" name="from_station" id="fare_from_station" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="From Station" required>
+                                <div id="fare_from_station_dropdown" class="station-dropdown hidden"></div>
+                            </div>
+                            <div class="mb-3 relative">
+                                <input type="text" name="to_station" id="fare_to_station" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="To Station" required>
+                                <div id="fare_to_station_dropdown" class="station-dropdown hidden"></div>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" name="train_code" id="train_code" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Enter train code" required>
+                            </div>
+                            <div class="mb-3">
+                                <select name="age_group" id="age_group" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+                                    <option value="">Select Age Group</option>
+                                    <option value="Adult">Adult</option>
+                                    <option value="Child">Child</option>
+                                    <option value="Senior">Senior Citizen</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="mt-3 w-full bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-calculator mr-2"></i>Check Fare
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div class="w-full sm:w-2/3 p-4 bg-gray-100">
+            <!-- Ad Placeholder -->
+            <div class="ad-placeholder mb-4">
+                <p>Google Ads Coming Soon</p>
+            </div>
+
+            <!-- Demo Ad -->
+            <div class="demo-ad">
+                <h3 class="text-lg font-semibold mb-2">Special Offer!</h3>
+                <p>Get 10% off on your next train booking. Use code: TRAINLOVER10</p>
+                <button class="mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Book Now
+                </button>
+            </div>
+
+            <div id="result-container" class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-500">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-blue-700">Results</h2>
+                    <button id="refresh-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+                <div id="result-content" class="text-gray-700">
+                    <!-- Results will be dynamically inserted here -->
+                    <p class="text-center text-gray-500">Select a service and submit the form to see results.</p>
+                </div>
+            </div>
+
+            <!-- Bottom Ad Placeholder -->
+            <div class="ad-placeholder mt-4">
+                <p>More Exciting Ads Coming Soon!</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Define the forms and their corresponding URLs
+        const forms = {
+            'pnr-form': '{% url "pnr" %}',
+            'live-running-form': '{% url "live_running" %}',
+            'search-train-form': '{% url "search_train" %}',
+            'train-b-station-form': '{% url "train_b_station" %}',
+            'fare-inquiry-form': '{% url "fare_inquiry" %}'
+        };
+
+        let activeService = null;
+
+        // Function to handle form submission
+        function handleFormSubmit(formId, url) {
+            document.getElementById(formId).addEventListener('submit', async (e) => {
+                e.preventDefault();
+                activeService = formId;
+                await submitForm(formId);
+                updateRefreshButtonState();
+            });
+        }
+
+        // Set up event listeners for all forms
+        Object.entries(forms).forEach(([formId, url]) => {
+            handleFormSubmit(formId, url);
+        });
+
+        // Function to handle the refresh button click
+        document.getElementById('refresh-button').addEventListener('click', async function() {
+            if (activeService) {
+                await submitForm(activeService);
+            }
+        });
+
+        // Function to update refresh button state
+        function updateRefreshButtonState() {
+            const refreshButton = document.getElementById('refresh-button');
+            if (activeService) {
+                refreshButton.disabled = false;
+                refreshButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                refreshButton.classList.add('hover:bg-blue-600');
+            } else {
+                refreshButton.disabled = true;
+                refreshButton.classList.add('opacity-50', 'cursor-not-allowed');
+                refreshButton.classList.remove('hover:bg-blue-600');
+            }
+        }
+
+        // Function to submit form data
+        async function submitForm(formId) {
+            const form = document.getElementById(formId);
+            const url = forms[formId];
+
+            if (!url) {
+                console.error('No URL found for form:', formId);
+                return;
+            }
+
+            const formData = new FormData(form);
+            const resultContent = document.getElementById('result-content');
+            resultContent.innerHTML = '<p class="text-indigo-500 text-center"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</p>';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayResult(data, formId);
+            } catch (error) {
+                console.error('Error:', error);
+                resultContent.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
+            }
+        }
+
+        // Function to display results based on the form type
+        function displayResult(data, formId) {
+            const resultContent = document.getElementById('result-content');
+            let html = '';
+
+            switch (formId) {
+                case 'pnr-form':
+                    html = displayPNRResult(data);
+                    break;
+                case 'live-running-form':
+                    html = displayLiveRunningResult(data);
+                    break;
+                case 'search-train-form':
+                    html = displaySearchTrainResult(data);
+                    break;
+                case 'train-b-station-form':
+                    html = displayTrainBetweenStationsResult(data);
+                    break;
+                case 'fare-inquiry-form':
+                    html = displayFareInquiryResult(data);
+                    break;
+                default:
+                    html = '<pre class="whitespace-pre-wrap break-words">' + JSON.stringify(data, null, 2) + '</pre>';
+            }
+
+            resultContent.innerHTML = html;
+        }
+
+
+        function displayPNRResult(data) {
+            function getRatingStars(rating) {
+                const fullStars = Math.floor(rating);
+                const halfStar = rating % 1 >= 0.5;
+                const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                
+                return `
+                    ${'<i class="fas fa-star text-yellow-400"></i>'.repeat(fullStars)}
+                    ${halfStar ? '<i class="fas fa-star-half-alt text-yellow-400"></i>' : ''}
+                    ${'<i class="far fa-star text-yellow-400"></i>'.repeat(emptyStars)}
+                `;
+            }
+        
+            let coachPositionHtml = '';
+            if (data.CoachPosition) {
+                const coaches = data.CoachPosition.split('-');
+                coachPositionHtml = `
+                    <div class="mt-6 animate-fade-in bg-white p-4 rounded-lg shadow-md">
+                        <h2 class="text-xl font-bold mb-3 text-indigo-700">Coach Position</h2>
+                        <div class="flex flex-nowrap overflow-x-auto gap-1 pb-2 coach-position-scroll">
+                            ${coaches.map((_, index) => `
+                                <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 border border-indigo-200 flex items-center justify-center text-sm font-semibold">
+                                    ${index + 1}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="text-sm text-indigo-600 mt-2 flex items-center justify-end">
+                            Train Direction
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                `;
+            }
+        
+            return `
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 p-8 rounded-lg shadow-lg max-w-4xl mx-auto animate-fade-in">
+                    <h1 class="text-3xl font-bold mb-6 text-center text-indigo-800 animate-bounce">PNR Status Result</h1>
+                    <div class="space-y-4 text-gray-800">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-200">
+                                <span class="font-bold text-indigo-700">PNR Number:</span> 
+                                <span class="text-lg">${data.Pnr}</span>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-200">
+                                <span class="font-bold text-indigo-700">Train:</span> 
+                                <span class="text-lg">${data.TrainNo} - ${data.TrainName}</span>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-md">
+                            <h2 class="text-xl font-bold mb-3 text-indigo-700">Journey Details</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="flex items-center">
+                                    <i class="far fa-calendar-alt text-indigo-600 mr-2 text-xl"></i>
+                                    <div>
+                                        <span class="font-semibold">Date:</span>
+                                        <div class="text-lg">${data.Doj}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock text-indigo-600 mr-2 text-xl"></i>
+                                    <div>
+                                        <span class="font-semibold">Departure:</span>
+                                        <div class="text-lg">${data.DepartureTime}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt text-indigo-600 mr-2 text-xl"></i>
+                                    <div>
+                                        <span class="font-semibold">From:</span>
+                                        <div class="text-lg">${data.From} (${data.SourceName})</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt text-indigo-600 mr-2 text-xl"></i>
+                                    <div>
+                                        <span class="font-semibold">To:</span>
+                                        <div class="text-lg">${data.To} (${data.DestinationName})</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-md">
+                            <h2 class="text-xl font-bold mb-3 text-indigo-700">Booking Details</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-couch text-indigo-600 mr-2 text-xl"></i>
+                                    <div>
+                                        <span class="font-semibold">Class:</span>
+                                        <div class="text-lg">${data.Class}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-ticket-alt text-indigo-600 mr-2 text-xl"></i>
+                                    <div>
+                                        <span class="font-semibold">Quota:</span>
+                                        <div class="text-lg">${data.Quota}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-clipboard-check text-indigo-600 mr-2 text-xl"></i>
+                                    <div>
+                                        <span class="font-semibold">Chart Status:</span>
+                                        <div class="text-lg">${data.ChartPrepared ? 'Prepared' : 'Not Prepared'}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-rupee-sign text-indigo-600 mr-2 text-xl"></i>
+                                    <div>
+                                        <span class="font-semibold">Fare:</span>
+                                        <div class="text-lg">₹${data.BookingFare}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${coachPositionHtml}
+                        
+                        ${data.PassengerStatus ? `
+                            <div class="bg-white p-4 rounded-lg shadow-md animate-fade-in">
+                                <h2 class="text-xl font-bold mb-3 text-indigo-700">Passenger Status</h2>
+                                <div class="space-y-2">
+                                    ${data.PassengerStatus.map((passenger, index) => `
+                                        <div class="bg-indigo-50 p-3 rounded-lg ${index % 2 === 0 ? 'transform hover:scale-102' : 'transform hover:scale-98'} transition-transform duration-200">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-semibold text-lg">Passenger ${passenger.Number}</span>
+                                                <span class="px-2 py-1 bg-indigo-600 text-white rounded-full text-sm">
+                                                    ${passenger.CurrentStatus}
+                                                </span>
+                                            </div>
+                                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <span class="text-indigo-600 font-semibold">Booking:</span>
+                                                    ${passenger.BookingStatus}
+                                                </div>
+                                                ${passenger.Coach ? `
+                                                    <div>
+                                                        <span class="text-indigo-600 font-semibold">Coach:</span>
+                                                        ${passenger.Coach}
+                                                    </div>
+                                                ` : ''}
+                                                ${passenger.Berth ? `
+                                                    <div>
+                                                        <span class="text-indigo-600 font-semibold">Berth:</span>
+                                                        ${passenger.Berth}
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : '<div class="bg-white p-4 rounded-lg shadow-md"><span class="font-bold text-indigo-700">Passengers:</span> No passenger information available</div>'}
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-md">
+                            <h2 class="text-xl font-bold mb-3 text-indigo-700">Ratings</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span class="font-semibold">Overall:</span>
+                                    <div class="text-lg">${getRatingStars(data.Rating)}</div>
+                                </div>
+                                <div>
+                                    <span class="font-semibold">Food:</span>
+                                    <div class="text-lg">${getRatingStars(data.FoodRating)}</div>
+                                </div>
+                                <div>
+                                    <span class="font-semibold">Punctuality:</span>
+                                    <div class="text-lg">${getRatingStars(data.PunctualityRating)}</div>
+                                </div>
+                                <div>
+                                    <span class="font-semibold">Cleanliness:</span>
+                                    <div class="text-lg">${getRatingStars(data.CleanlinessRating)}</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-600 mt-2 text-center">Based on ${data.RatingCount} ratings</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Add this CSS to your stylesheet
+        const styles = `
+            @keyframes fade-in {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in {
+                animation: fade-in 0.5s ease-out;
+            }
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+            .animate-bounce {
+                animation: bounce 2s infinite;
+            }
+            .coach-position-scroll {
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+            }
+            .coach-position-scroll::-webkit-scrollbar {
+                height: 6px;
+            }
+            .coach-position-scroll::-webkit-scrollbar-thumb {
+                background-color: rgba(99, 102, 241, 0.5);
+                border-radius: 3px;
+            }
+            .coach-position-scroll::-webkit-scrollbar-track {
+                background-color: rgba(99, 102, 241, 0.1);
+            }
+        `;
+
+        function displayLiveRunningResult(data) {
+            if (!data || !data.status_data || data.status_data.length === 0) {
+                return `
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <p class="text-lg text-gray-600">
+                            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                            No data available for the given train number and date.
+                        </p>
+                    </div>
+                `;
+            }
+        
+            let html = `
+                <div class="bg-white p-6 rounded-lg shadow-lg animate-fadeIn">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">
+                        <i class="fas fa-train mr-2"></i>Live Running Status
+                    </h3>`;
+        
+            if (data.current_station) {
+                html += `
+                    <p class="text-lg mb-4 animate-slideInRight">
+                        <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                        Current Station: <span class="font-semibold">${data.current_station}</span>
+                    </p>`;
+            }
+        
+            html += `
+                <div class="overflow-x-auto">
+                    <table class="w-full mt-4 border-collapse animate-fadeIn">
+                        <thead>
+                            <tr class="bg-blue-100">
+                                <th class="border border-blue-200 p-3 text-left">Station</th>
+                                <th class="border border-blue-200 p-3 text-left">Day</th>
+                                <th class="border border-blue-200 p-3 text-left">Date</th>
+                                <th class="border border-blue-200 p-3 text-left">Arrival</th>
+                                <th class="border border-blue-200 p-3 text-left">Departure</th>
+                                <th class="border border-blue-200 p-3 text-left">Status</th>
+                                <th class="border border-blue-200 p-3 text-left">Live</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+        
+            data.status_data.forEach((station, index) => {
+                const isRightTime = station.lates === 'Right Time' || station.lates === 'On time';
+                const statusColor = isRightTime ? 'text-green-600' : 'text-red-600';
+                html += `
+                    <tr class="hover:bg-gray-100 animate-fadeIn" style="animation-delay: ${index * 100}ms">
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-subway text-blue-500 mr-2"></i>${station.station}
+                        </td>
+                        <td class="border border-blue-200 p-3">${station.day}</td>
+                        <td class="border border-blue-200 p-3">${station.date}</td>
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-clock text-gray-500 mr-2"></i>${station.arrives}
+                        </td>
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-clock text-gray-500 mr-2"></i>${station.departs}
+                        </td>
+                        <td class="border border-blue-200 p-3 ${statusColor}">
+                            <i class="fas ${isRightTime ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2"></i>${station.lates}
+                        </td>
+                        <td class="border border-blue-200 p-3">
+                            ${station.live_train ? '<span class="animate-pulse inline-block bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">LIVE</span>' : ''}
+                        </td>
+                    </tr>`;
+            });
+        
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+        
+            return html;
+        }
+
+            function displaySearchTrainResult(data) {
+                let html = `
+                <div class="bg-white p-6 rounded-lg shadow-lg animate-fadeIn">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600">
+                        <i class="fas fa-train mr-2"></i>Train Schedule
+                    </h3>`;
+            
+                if (Array.isArray(data) && data.length > 0) {
+                    html += `
+                    <div class="overflow-x-auto">
+                        <table class="w-full mt-4 border-collapse animate-fadeIn">
+                            <thead>
+                                <tr class="bg-blue-100">
+                                    <th class="border border-blue-200 p-3 text-left">Station</th>
+                                    <th class="border border-blue-200 p-3 text-left">Arrival</th>
+                                    <th class="border border-blue-200 p-3 text-left">Departure</th>
+                                    <th class="border border-blue-200 p-3 text-left">Distance</th>
+                                    <th class="border border-blue-200 p-3 text-left">Halt</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+            
+                    data.forEach((station, index) => {
+                        html += `
+                        <tr class="hover:bg-gray-100 animate-fadeIn" style="animation-delay: ${index * 100}ms">
+                            <td class="border border-blue-200 p-3">
+                                <i class="fas fa-subway text-blue-500 mr-2"></i>${station.sname || 'N/A'}
+                            </td>
+                            <td class="border border-blue-200 p-3">
+                                <i class="fas fa-clock text-gray-500 mr-2"></i>${station.arrive || 'N/A'}
+                            </td>
+                            <td class="border border-blue-200 p-3">
+                                <i class="fas fa-clock text-gray-500 mr-2"></i>${station.depart || 'N/A'}
+                            </td>
+                            <td class="border border-blue-200 p-3">
+                                <i class="fas fa-route text-green-500 mr-2"></i>${station.distance || 'N/A'} km
+                            </td>
+                            <td class="border border-blue-200 p-3">
+                                <i class="fas fa-hourglass-half text-orange-500 mr-2"></i>${station.halt || 'N/A'}
+                            </td>
+                        </tr>`;
+                    });
+            
+                    html += `
+                            </tbody>
+                        </table>
+                    </div>`;
+                } else {
+                    html += `
+                    <p class="text-lg text-gray-600 animate-fadeIn">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                        No schedule data available for the given train.
+                    </p>`;
+                }
+            
+                html += `</div>`;
+                return html;
+            }
+
+            function displayTrainBetweenStationsResult(data) {
+                if (data.error) {
+                    return `<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-r-lg shadow-md" role="alert">
+                        <p class="font-bold">Error</p>
+                        <p>${data.error}</p>
+                    </div>`;
+                }
+
+                if (!data.train_between_stations || data.train_between_stations.length === 0) {
+                    return `<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-r-lg shadow-md" role="alert">
+                        <p class="font-bold">No Results</p>
+                        <p>No trains found for the given criteria.</p>
+                    </div>`;
+                }
+
+                const trainRows = data.train_between_stations.map(train => {
+                    const runningDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+                        .map(day => train.train_run_days.includes(day) 
+                            ? `<span class="inline-block w-6 text-center bg-green-100 text-green-800 rounded text-sm font-semibold">${day}</span>` 
+                            : `<span class="inline-block w-6 text-center bg-gray-100 text-gray-400 rounded text-sm">${day}</span>`)
+                        .join('');
+
+                    const availableClasses = train.class_type.map(c => {
+                        const availability = train.seat_availability[c.coach_type];
+                        let bgColor, textColor, availabilityText, fareText;
+                        
+                        if (availability && availability.availability) {
+                            const status = availability.availability.toLowerCase();
+                            if (status.includes('available-')) {
+                                bgColor = 'bg-green-100';
+                                textColor = 'text-green-800';
+                            } else if (status.includes('wl') || ['pqwl', 'rwl', 'gnwl', 'ckwl', 'rlwl'].some(wl => status.includes(wl))) {
+                                bgColor = 'bg-yellow-100';
+                                textColor = 'text-yellow-800';
+                            } else {
+                                bgColor = 'bg-red-100';
+                                textColor = 'text-red-800';
+                            }
+                            availabilityText = availability.availability;
+                            fareText = availability.fare ? `₹${availability.fare}` : 'N/A';
+                        } else {
+                            bgColor = 'bg-gray-100';
+                            textColor = 'text-gray-800';
+                            availabilityText = 'N/A';
+                            fareText = 'N/A';
+                        }
+
+                        return `
+                            <div class="flex items-center justify-between p-2 ${bgColor} rounded text-sm">
+                                <span class="font-semibold ${textColor}">${c.coach_type}</span>
+                                <span class="${textColor}">${availabilityText} (${fareText})</span>
+                            </div>`;
+                    }).join('');
+
+                    return `
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-4">
+                                <div class="font-semibold text-indigo-600 text-base">${train.train_number}</div>
+                                <div class="text-sm text-gray-600">${train.train_name}</div>
+                                <div class="mt-2 grid grid-cols-2 gap-2">${availableClasses}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex justify-between items-center text-base">
+                                    <div>
+                                        <div class="font-semibold">${train.from}</div>
+                                        <div class="text-sm text-gray-600">${train.from_std}</div>
+                                    </div>
+                                    <div class="text-gray-400 mx-2">→</div>
+                                    <div class="text-right">
+                                        <div class="font-semibold">${train.to}</div>
+                                        <div class="text-sm text-gray-600">${train.to_std}</div>
+                                    </div>
+                                </div>
+                                <div class="text-sm font-medium bg-indigo-100 text-indigo-800 rounded px-2 py-1 inline-block mt-2">${train.duration}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex space-x-1">${runningDays}</div>
+                            </td>
+                        </tr>`;
+                }).join('');
+
+                return `
+                    <div class="max-h-[80vh] overflow-y-auto">
+                        <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+                            <thead class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white sticky top-0">
+                                <tr>
+                                    <th class="py-3 px-4 text-left text-base font-semibold">Train & Availability</th>
+                                    <th class="py-3 px-4 text-left text-base font-semibold">Route & Duration</th>
+                                    <th class="py-3 px-4 text-left text-base font-semibold">Days</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700">
+                                ${trainRows}
+                            </tbody>
+                        </table>
+                    </div>`;
+            }
+        
+        
+
+        function displayFareInquiryResult(data) {
+            let html = `<h3 class="text-xl font-semibold mb-2">Fare Information</h3>
+                        <table class="w-full mt-4 border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="border border-gray-300 p-2">Class</th>
+                                    <th class="border border-gray-300 p-2">General</th>
+                                    <th class="border border-gray-300 p-2">Tatkal</th>
+                                    <th class="border border-gray-300 p-2">Fare Breakup</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+        
+            for (const [classType, fare] of Object.entries(data.fare)) {
+                html += `<tr>
+                            <td class="border border-gray-300 p-2">${classType}</td>
+                            <td class="border border-gray-300 p-2">₹${fare.GN ? fare.GN : '-'}</td>
+                            <td class="border border-gray-300 p-2">₹${fare.TQ ? fare.TQ : '-'}</td>
+                            <td class="border border-gray-300 p-2">
+                                ${fare.breakup && fare.breakup.GN ? `
+                                    <details>
+                                        <summary>General</summary>
+                                        <ul class="list-disc pl-6">
+                                            ${fare.breakup.GN.map(item => `<li>${item.text}: ₹${item.value}</li>`).join('')}
+                                        </ul>
+                                    </details>
+                                ` : '-'}
+                                ${fare.breakup && fare.breakup.TQ ? `
+                                    <details>
+                                        <summary>Tatkal</summary>
+                                        <ul class="list-disc pl-6">
+                                            ${fare.breakup.TQ.map(item => `<li>${item.text}: ₹${item.value}</li>`).join('')}
+                                        </ul>
+                                    </details>
+                                ` : '-'}
+                            </td>
+                         </tr>`;
+            }
+        
+            html += `</tbody></table>`;
+            return html;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date for live running status
+            const currentDate = new Date().toISOString().split('T')[0];
+            document.getElementById('current-date').value = currentDate;
+
+            // Initialize refresh button state
+            updateRefreshButtonState();
+        });
+
+        // Station code setup
+        const stationCodes = {
+            {% for code, name in station_codes.items %}
+            "{{ name }} ({{ code }})": "{{ code }}",
+            {% endfor %}
+        };
+
+        function setupStationDropdown(inputId, dropdownId) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            let selectedCode = '';
+
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                const matches = Object.keys(stationCodes).filter(key =>
+                    key.toLowerCase().includes(value)
+                );
+
+                if (matches.length > 0 && value.length > 0) {
+                    dropdown.innerHTML = matches.map(key =>
+                        `<div data-code="${stationCodes[key]}" data-name="${key}">${key}</div>`
+                    ).join('');
+                    dropdown.classList.remove('hidden');
+                } else {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+            dropdown.addEventListener('click', function(e) {
+                if (e.target.tagName === 'DIV') {
+                    const code = e.target.dataset.code;
+                    const name = e.target.dataset.name;
+                    input.value = name;
+                    selectedCode = code;
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (e.target !== input && e.target !== dropdown) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+            input.getSelectedCode = function() {
+                return selectedCode;
+            };
+        }
+
+        setupStationDropdown('from_station', 'from_station_dropdown');
+        setupStationDropdown('to_station', 'to_station_dropdown');
+        setupStationDropdown('fare_from_station', 'fare_from_station_dropdown');
+        setupStationDropdown('fare_to_station', 'fare_to_station_dropdown');
+    </script>
+</body>
+</html>

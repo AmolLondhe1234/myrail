@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyRail - Train Search Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --myrail-blue: #14b9d5;
+            --myrail-dark-blue: #0e8a9e;
+        }
+        .bg-myrail { background-color: var(--myrail-blue); }
+        .text-myrail { color: var(--myrail-blue); }
+        .border-myrail { border-color: var(--myrail-blue); }
+        .hover\:bg-myrail:hover { background-color: var(--myrail-blue); }
+        .hover\:text-myrail:hover { color: var(--myrail-blue); }
+        .train-card { border-left: 5px solid var(--myrail-blue); }
+        .coach-tag { background-color: #e6f7fa; color: var(--myrail-blue); }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-myrail">MyRail</h1>
+            <nav class="hidden md:flex">
+                <a href="#" class="text-gray-600 hover:text-myrail mx-4 font-medium">Trains</a>
+                <a href="#" class="text-gray-600 hover:text-myrail mx-4 font-medium">Bus</a>
+                <a href="#" class="text-gray-600 hover:text-myrail mx-4 font-medium">Hotels</a>
+                <a href="#" class="text-gray-600 hover:text-myrail mx-4 font-medium">Meals</a>
+            </nav>
+            <button class="md:hidden text-gray-600 hover:text-myrail focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8 flex flex-col lg:flex-row">
+        <!-- Sidebar -->
+        <aside class="w-full lg:w-1/4 bg-white shadow-lg rounded-lg overflow-hidden mb-8 lg:mb-0 lg:mr-8 sticky top-20 h-fit">
+            <div class="bg-myrail text-white p-4">
+                <h2 class="text-xl font-bold">Quick Links</h2>
+            </div>
+            <nav class="divide-y divide-gray-200">
+                <a href="#" class="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-myrail transition duration-200 flex items-center">
+                    <svg class="inline-block w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                    </svg>
+                    PNR Status
+                </a>
+                <a href="#" class="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-myrail transition duration-200 flex items-center">
+                    <svg class="inline-block w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Train Ticket
+                </a>
+                <a href="#" class="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-myrail transition duration-200 flex items-center">
+                    <svg class="inline-block w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Live Train Status
+                </a>
+                <a href="#" class="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-myrail transition duration-200 flex items-center">
+                    <svg class="inline-block w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Train Schedule
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="w-full lg:w-3/4">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Train Search Results</h2>
+            <div class="space-y-6">
+                {% if error %}
+                <p class="text-red-600 text-center font-bold bg-red-100 p-4 rounded">{{ error }}</p>
+                {% elif train_between_stations %}
+                {% for train in train_between_stations %}
+                <div class="train-card bg-white shadow-lg rounded-lg overflow-hidden transform transition duration-300 hover:scale-105">
+                    <div class="bg-gray-50 p-4 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-myrail">{{ train.train_number }} - {{ train.train_name }}</h3>
+                        <p class="text-sm text-gray-600">Runs on: {{ train.train_run_days|join:", " }}</p>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+                            <div class="text-center md:text-left mb-4 md:mb-0">
+                                <p class="font-semibold text-gray-700">{{ train.from_station_name }} ({{ train.from }})</p>
+                                <p class="text-xl font-bold text-green-600">{{ train.from_std }}</p>
+                                <p class="text-sm text-gray-600">Day {{ train.from_day }}</p>
+                            </div>
+                            <div class="text-center mb-4 md:mb-0">
+                                <p class="text-sm text-gray-600">{{ train.duration }}</p>
+                                <div class="w-32 h-1 bg-gray-300 my-2 relative">
+                                    <div class="absolute top-0 left-0 w-full h-full bg-myrail" style="clip-path: polygon(0 0, 50% 100%, 100% 0);"></div>
+                                </div>
+                                <p class="text-sm text-gray-600">{{ train.distance }} km</p>
+                            </div>
+                            <div class="text-center md:text-right">
+                                <p class="font-semibold text-gray-700">{{ train.to_station_name }} ({{ train.to }})</p>
+                                <p class="text-xl font-bold text-red-600">{{ train.to_std }}</p>
+                                <p class="text-sm text-gray-600">Day {{ train.to_day }}</p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2 text-gray-700">Seat Availability:</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {% for class, availability in train.seat_availability.items %}
+                                <div class="bg-gray-100 p-3 rounded-lg">
+                                    <h5 class="font-semibold text-myrail">{{ class }}</h5>
+                                    <p class="text-sm"><span class="font-medium">Status:</span> {{ availability.availability }}</p>
+                                    <p class="text-sm"><span class="font-medium">Prediction:</span> {{ availability.predictionDisplayName }}</p>
+                                    <p class="text-sm"><span class="font-medium">Fare:</span> ₹{{ availability.fare }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2 text-gray-700">Available Classes:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                {% for class in train.class_type %}
+                                <span class="coach-tag px-2 py-1 rounded-full text-sm">
+                                    {{ class.coach_name }} ({{ class.coach_type }})
+                                    {% if class.fare != 'NA' %}
+                                    - ₹{{ class.fare }}
+                                    {% endif %}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between text-sm text-gray-600">
+                            <p class="mb-2 md:mb-0"><span class="font-semibold">On-time Rating:</span> {{ train.on_time_rating }}/10</p>
+                            <p class="mb-2 md:mb-0"><span class="font-semibold">Pantry:</span> {% if train.has_pantry %}Available{% else %}Not Available{% endif %}</p>
+                            <p><span class="font-semibold">Tatkal:</span> {% if train.show_tatkal_btn %}Available{% else %}Not Available{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-center bg-yellow-100 p-4 rounded text-yellow-800">No trains found for the given criteria.</p>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 MyRail. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

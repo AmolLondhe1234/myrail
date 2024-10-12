@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #3498db;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        .search-form {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .search-form input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-form input[type="submit"] {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .search-form input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+        .train-info, .schedule, .meta-info, .rake-reversal {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        h2, h3 {
+            color: #3498db;
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .error {
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Train Search</h1>
+    </div>
+    <div class="container">
+        <div class="search-form">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" name="train_number" placeholder="Enter Train Number" required>
+                <input type="submit" value="Search">
+            </form>
+        </div>
+
+        {% if error %}
+            <div class="error">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        {% if train_number %}
+            <div class="train-info">
+                <h2>{{ train_number }} - {{ short_name }}</h2>
+                <p><strong>Origin:</strong> {{ origin }}</p>
+                <p><strong>Destination:</strong> {{ destination }}</p>
+            </div>
+
+            <div class="schedule">
+                <h3>Schedule</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Station</th>
+                            <th>Arrival</th>
+                            <th>Departure</th>
+                            <th>Distance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stop in schedule %}
+                            <tr>
+                                <td>{{ stop.sname }}</td>
+                                <td>{{ stop.arrive }}</td>
+                                <td>{{ stop.depart }}</td>
+                                <td>{{ stop.distance }} km</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4">No schedule information available.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if rake_reversal_stations %}
+                <div class="rake-reversal">
+                    <h3>Rake Reversal Stations</h3>
+                    <ul>
+                        {% for station in rake_reversal_stations %}
+                            <li>{{ station }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
