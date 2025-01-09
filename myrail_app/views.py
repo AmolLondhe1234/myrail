@@ -114,45 +114,80 @@ def live_running(request):
 
 @csrf_exempt
 def search_train(request):
-    if request.method == 'POST':
-        train_number = request.POST.get('train_number')
-       
-        url = f'https://www.trainman.in/running-status/{train_number}'
-       
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-           
-            soup = Soup(response.content, 'html.parser')
-            script_tag = soup.find('script', {'id': 'serverApp-state'})
-           
-            if script_tag:
-                script_content = script_tag.string
-                corrected_json_str = script_content.replace('&q;', '"').replace('&a;', '&')
-               
-                data = json.loads(corrected_json_str)
-                
-                # Extract the specific key that contains the route information
-                route_key = next((key for key in data.keys() if key.startswith('G.https')), None)
-                
-                if route_key:
-                    body_data = data[route_key]['body']
-                    if 'routes' in body_data and len(body_data['routes']) > 0:
-                        schedule_data = body_data['routes'][0].get('schedule', [])
-                        print(schedule_data)
-                        return JsonResponse(schedule_data, safe=False)
-                    else:
-                        return JsonResponse({'error': "No route data found"}, status=404)
-                else:
-                    return JsonResponse({'error': "Failed to find route data"}, status=404)
-            else:
-                return JsonResponse({'error': "Failed to find the script tag"}, status=400)
-        except requests.RequestException as e:
-            return JsonResponse({'error': f"Request failed: {str(e)}"}, status=500)
-        except json.JSONDecodeError as e:
-            return JsonResponse({'error': f"Failed to parse JSON data: {str(e)}"}, status=500)
-   
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+    train_number = request.POST.get('train_number')
+    if not train_number:
+        return JsonResponse({'status': 'error', 'message': 'Train number is required'}, status=400)
+
+    url = f'https://www.trainman.in/services/train/{train_number}?key=077e230d-4351-4a84-b87a-7ef4e854ca59&int=1'
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'application/json',
+        'Referer': 'https://www.trainman.in/'
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+
+        # Validate and extract the required data
+        if not data.get('routes') or len(data['routes']) == 0:
+            return JsonResponse({'status': 'error', 'message': 'No route information found for this train'}, status=404)
+
+        route = data['routes'][0]
+        train_info = {
+            'train_number': route.get('train_code'),
+            'train_name': route.get('train_name'),
+            'type': route.get('type'),
+            'classes': route.get('class'),
+            'distance': route.get('distance'),
+            'duration': route.get('duration'),
+            'pantry_car': route.get('pantry_car'),
+            'rake_type': route.get('rake_type'),
+            'origin': {
+                'station': route['origin']['sname'],
+                'code': route['origin']['scode'],
+                'city': route['origin']['city']
+            },
+            'destination': {
+                'station': route['dest']['sname'],
+                'code': route['dest']['scode'],
+                'city': route['dest']['city']
+            },
+            'schedule': [
+                {
+                    'station_name': station['sname'],
+                    'station_code': station['scode'],
+                    'day': station['day'],
+                    'distance': station['distance'],
+                    'arrival': station['arrive'],
+                    'departure': station['depart'],
+                    'platform': station['platform'],
+                    'halt': station['halt'],
+                    'coordinates': {
+                        'lat': station['lat'],
+                        'lng': station['lng']
+                    }
+                }
+                for station in route.get('schedule', [])
+            ],
+            'popular_stations': route.get('meta_info', {}).get('popular_stations', []),
+            'train_description': route.get('meta_info', {}).get('train_description')
+        }
+        print(train_info)
+        return JsonResponse({'status': 'success', 'message': 'Train information retrieved successfully', 'data': train_info})
+
+    except requests.RequestException as e:
+        return JsonResponse({'status': 'error', 'message': f'Failed to fetch train information: {str(e)}'}, status=500)
+    except json.JSONDecodeError as e:
+        return JsonResponse({'status': 'error', 'message': f'Failed to parse train information: {str(e)}'}, status=500)
+    except KeyError as e:
+        return JsonResponse({'status': 'error', 'message': f'Missing expected data in response: {str(e)}'}, status=500)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'An unexpected error occurred: {str(e)}'}, status=500)
 
 def load_station_codes():
     """Load station codes from a JSON file."""

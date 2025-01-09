@@ -704,162 +704,170 @@
             return html;
         }
 
-            function displaySearchTrainResult(data) {
-                let html = `
-                <div class="bg-white p-6 rounded-lg shadow-lg animate-fadeIn">
-                    <h3 class="text-2xl font-bold mb-4 text-blue-600">
-                        <i class="fas fa-train mr-2"></i>Train Schedule
-                    </h3>`;
-            
-                if (Array.isArray(data) && data.length > 0) {
+        function displaySearchTrainResult(response) {
+            let html = `
+            <div class="bg-white p-6 rounded-lg shadow-lg animate-fadeIn">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">
+                    <i class="fas fa-train mr-2"></i>Train Schedule
+                </h3>`;
+        
+            // Check if response status is success and schedule data is available
+            if (response.status === "success" && response.data && response.data.schedule && Array.isArray(response.data.schedule) && response.data.schedule.length > 0) {
+                html += `
+                <div class="overflow-x-auto">
+                    <table class="w-full mt-4 border-collapse animate-fadeIn">
+                        <thead>
+                            <tr class="bg-blue-100">
+                                <th class="border border-blue-200 p-3 text-left">Station</th>
+                                <th class="border border-blue-200 p-3 text-left">Arrival</th>
+                                <th class="border border-blue-200 p-3 text-left">Departure</th>
+                                <th class="border border-blue-200 p-3 text-left">Distance</th>
+                                <th class="border border-blue-200 p-3 text-left">Halt</th>
+                                <th class="border border-blue-200 p-3 text-left">Platform</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+        
+                // Loop through the schedule array and create table rows for each station
+                response.data.schedule.forEach((station, index) => {
                     html += `
-                    <div class="overflow-x-auto">
-                        <table class="w-full mt-4 border-collapse animate-fadeIn">
-                            <thead>
-                                <tr class="bg-blue-100">
-                                    <th class="border border-blue-200 p-3 text-left">Station</th>
-                                    <th class="border border-blue-200 p-3 text-left">Arrival</th>
-                                    <th class="border border-blue-200 p-3 text-left">Departure</th>
-                                    <th class="border border-blue-200 p-3 text-left">Distance</th>
-                                    <th class="border border-blue-200 p-3 text-left">Halt</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-            
-                    data.forEach((station, index) => {
-                        html += `
-                        <tr class="hover:bg-gray-100 animate-fadeIn" style="animation-delay: ${index * 100}ms">
-                            <td class="border border-blue-200 p-3">
-                                <i class="fas fa-subway text-blue-500 mr-2"></i>${station.sname || 'N/A'}
-                            </td>
-                            <td class="border border-blue-200 p-3">
-                                <i class="fas fa-clock text-gray-500 mr-2"></i>${station.arrive || 'N/A'}
-                            </td>
-                            <td class="border border-blue-200 p-3">
-                                <i class="fas fa-clock text-gray-500 mr-2"></i>${station.depart || 'N/A'}
-                            </td>
-                            <td class="border border-blue-200 p-3">
-                                <i class="fas fa-route text-green-500 mr-2"></i>${station.distance || 'N/A'} km
-                            </td>
-                            <td class="border border-blue-200 p-3">
-                                <i class="fas fa-hourglass-half text-orange-500 mr-2"></i>${station.halt || 'N/A'}
-                            </td>
-                        </tr>`;
-                    });
-            
-                    html += `
-                            </tbody>
-                        </table>
-                    </div>`;
-                } else {
-                    html += `
-                    <p class="text-lg text-gray-600 animate-fadeIn">
-                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                        No schedule data available for the given train.
-                    </p>`;
-                }
-            
-                html += `</div>`;
-                return html;
+                    <tr class="hover:bg-gray-100 animate-fadeIn" style="animation-delay: ${index * 100}ms">
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-subway text-blue-500 mr-2"></i>${station.station_name || 'N/A'}
+                        </td>
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-clock text-gray-500 mr-2"></i>${station.arrival || 'N/A'}
+                        </td>
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-clock text-gray-500 mr-2"></i>${station.departure || 'N/A'}
+                        </td>
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-route text-green-500 mr-2"></i>${station.distance || 'N/A'} km
+                        </td>
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-hourglass-half text-orange-500 mr-2"></i>${station.halt || 'N/A'} mins
+                        </td>
+                        <td class="border border-blue-200 p-3">
+                            <i class="fas fa-columns text-purple-500 mr-2"></i>${station.platform || 'N/A'}
+                        </td>
+                    </tr>`;
+                });
+        
+                html += `
+                        </tbody>
+                    </table>
+                </div>`;
+            } else {
+                html += `
+                <p class="text-lg text-gray-600 animate-fadeIn">
+                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                    No schedule data available for the given train.
+                </p>`;
+            }
+        
+            html += `</div>`;
+            return html;
+        }
+        
+        
+
+        function displayTrainBetweenStationsResult(data) {
+            if (data.error) {
+                return `<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-r-lg shadow-md" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p>${data.error}</p>
+                </div>`;
             }
 
-            function displayTrainBetweenStationsResult(data) {
-                if (data.error) {
-                    return `<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-r-lg shadow-md" role="alert">
-                        <p class="font-bold">Error</p>
-                        <p>${data.error}</p>
-                    </div>`;
-                }
+            if (!data.train_between_stations || data.train_between_stations.length === 0) {
+                return `<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-r-lg shadow-md" role="alert">
+                    <p class="font-bold">No Results</p>
+                    <p>No trains found for the given criteria.</p>
+                </div>`;
+            }
 
-                if (!data.train_between_stations || data.train_between_stations.length === 0) {
-                    return `<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-r-lg shadow-md" role="alert">
-                        <p class="font-bold">No Results</p>
-                        <p>No trains found for the given criteria.</p>
-                    </div>`;
-                }
+            const trainRows = data.train_between_stations.map(train => {
+                const runningDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+                    .map(day => train.train_run_days.includes(day) 
+                        ? `<span class="inline-block w-6 text-center bg-green-100 text-green-800 rounded text-sm font-semibold">${day}</span>` 
+                        : `<span class="inline-block w-6 text-center bg-gray-100 text-gray-400 rounded text-sm">${day}</span>`)
+                    .join('');
 
-                const trainRows = data.train_between_stations.map(train => {
-                    const runningDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-                        .map(day => train.train_run_days.includes(day) 
-                            ? `<span class="inline-block w-6 text-center bg-green-100 text-green-800 rounded text-sm font-semibold">${day}</span>` 
-                            : `<span class="inline-block w-6 text-center bg-gray-100 text-gray-400 rounded text-sm">${day}</span>`)
-                        .join('');
-
-                    const availableClasses = train.class_type.map(c => {
-                        const availability = train.seat_availability[c.coach_type];
-                        let bgColor, textColor, availabilityText, fareText;
-                        
-                        if (availability && availability.availability) {
-                            const status = availability.availability.toLowerCase();
-                            if (status.includes('available-')) {
-                                bgColor = 'bg-green-100';
-                                textColor = 'text-green-800';
-                            } else if (status.includes('wl') || ['pqwl', 'rwl', 'gnwl', 'ckwl', 'rlwl'].some(wl => status.includes(wl))) {
-                                bgColor = 'bg-yellow-100';
-                                textColor = 'text-yellow-800';
-                            } else {
-                                bgColor = 'bg-red-100';
-                                textColor = 'text-red-800';
-                            }
-                            availabilityText = availability.availability;
-                            fareText = availability.fare ? `₹${availability.fare}` : 'N/A';
+                const availableClasses = train.class_type.map(c => {
+                    const availability = train.seat_availability[c.coach_type];
+                    let bgColor, textColor, availabilityText, fareText;
+                    
+                    if (availability && availability.availability) {
+                        const status = availability.availability.toLowerCase();
+                        if (status.includes('available-')) {
+                            bgColor = 'bg-green-100';
+                            textColor = 'text-green-800';
+                        } else if (status.includes('wl') || ['pqwl', 'rwl', 'gnwl', 'ckwl', 'rlwl'].some(wl => status.includes(wl))) {
+                            bgColor = 'bg-yellow-100';
+                            textColor = 'text-yellow-800';
                         } else {
-                            bgColor = 'bg-gray-100';
-                            textColor = 'text-gray-800';
-                            availabilityText = 'N/A';
-                            fareText = 'N/A';
+                            bgColor = 'bg-red-100';
+                            textColor = 'text-red-800';
                         }
-
-                        return `
-                            <div class="flex items-center justify-between p-2 ${bgColor} rounded text-sm">
-                                <span class="font-semibold ${textColor}">${c.coach_type}</span>
-                                <span class="${textColor}">${availabilityText} (${fareText})</span>
-                            </div>`;
-                    }).join('');
+                        availabilityText = availability.availability;
+                        fareText = availability.fare ? `₹${availability.fare}` : 'N/A';
+                    } else {
+                        bgColor = 'bg-gray-100';
+                        textColor = 'text-gray-800';
+                        availabilityText = 'N/A';
+                        fareText = 'N/A';
+                    }
 
                     return `
-                        <tr class="border-b border-gray-200 hover:bg-gray-50">
-                            <td class="py-3 px-4">
-                                <div class="font-semibold text-indigo-600 text-base">${train.train_number}</div>
-                                <div class="text-sm text-gray-600">${train.train_name}</div>
-                                <div class="mt-2 grid grid-cols-2 gap-2">${availableClasses}</div>
-                            </td>
-                            <td class="py-3 px-4">
-                                <div class="flex justify-between items-center text-base">
-                                    <div>
-                                        <div class="font-semibold">${train.from}</div>
-                                        <div class="text-sm text-gray-600">${train.from_std}</div>
-                                    </div>
-                                    <div class="text-gray-400 mx-2">→</div>
-                                    <div class="text-right">
-                                        <div class="font-semibold">${train.to}</div>
-                                        <div class="text-sm text-gray-600">${train.to_std}</div>
-                                    </div>
-                                </div>
-                                <div class="text-sm font-medium bg-indigo-100 text-indigo-800 rounded px-2 py-1 inline-block mt-2">${train.duration}</div>
-                            </td>
-                            <td class="py-3 px-4">
-                                <div class="flex space-x-1">${runningDays}</div>
-                            </td>
-                        </tr>`;
+                        <div class="flex items-center justify-between p-2 ${bgColor} rounded text-sm">
+                            <span class="font-semibold ${textColor}">${c.coach_type}</span>
+                            <span class="${textColor}">${availabilityText} (${fareText})</span>
+                        </div>`;
                 }).join('');
 
                 return `
-                    <div class="max-h-[80vh] overflow-y-auto">
-                        <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
-                            <thead class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white sticky top-0">
-                                <tr>
-                                    <th class="py-3 px-4 text-left text-base font-semibold">Train & Availability</th>
-                                    <th class="py-3 px-4 text-left text-base font-semibold">Route & Duration</th>
-                                    <th class="py-3 px-4 text-left text-base font-semibold">Days</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-700">
-                                ${trainRows}
-                            </tbody>
-                        </table>
-                    </div>`;
-            }
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-3 px-4">
+                            <div class="font-semibold text-indigo-600 text-base">${train.train_number}</div>
+                            <div class="text-sm text-gray-600">${train.train_name}</div>
+                            <div class="mt-2 grid grid-cols-2 gap-2">${availableClasses}</div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="flex justify-between items-center text-base">
+                                <div>
+                                    <div class="font-semibold">${train.from}</div>
+                                    <div class="text-sm text-gray-600">${train.from_std}</div>
+                                </div>
+                                <div class="text-gray-400 mx-2">→</div>
+                                <div class="text-right">
+                                    <div class="font-semibold">${train.to}</div>
+                                    <div class="text-sm text-gray-600">${train.to_std}</div>
+                                </div>
+                            </div>
+                            <div class="text-sm font-medium bg-indigo-100 text-indigo-800 rounded px-2 py-1 inline-block mt-2">${train.duration}</div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="flex space-x-1">${runningDays}</div>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+            return `
+                <div class="max-h-[80vh] overflow-y-auto">
+                    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+                        <thead class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white sticky top-0">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-base font-semibold">Train & Availability</th>
+                                <th class="py-3 px-4 text-left text-base font-semibold">Route & Duration</th>
+                                <th class="py-3 px-4 text-left text-base font-semibold">Days</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            ${trainRows}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
         
         
 
